@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: outdoor-gear-recommendation
+
+server:
+  port: 8080
+
