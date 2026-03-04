@@ -8,4 +8,8 @@ import java.util.List;
 public interface GearItemTagRepository extends JpaRepository<GearItemTag, Long> {
 
     List<GearItemTag> findByGearId(Long gearId);
+
+    List<GearItemTag> findByTagId(Long tagId);
+
+    void deleteByGearId(Long gearId);
 }
