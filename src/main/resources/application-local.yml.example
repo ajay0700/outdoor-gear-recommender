@@ -1,0 +1,24 @@
+spring:
+  # 本地未装 Redis 时排除，避免启动报错
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/outdoor_gear?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username:       # 本地调试账号，提交代码前请改成环境变量方式或删除本文件
+    password:        # 本地调试密码，仅示例，实际请在 application-local.yml 中配置
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+server:
+  port: 8080
+

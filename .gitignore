@@ -22,3 +22,23 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Local Spring profiles (do not commit real passwords)
+src/main/resources/application-*-local.yml
+src/main/resources/application-local.yml
+
+# Build output
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Environment (passwords, keys)
+.env
+.env.local
+
+# 开题报告等可能含个人信息（学号、姓名、学校等）
+docs/*.docx
+docs/*.doc

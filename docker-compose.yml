@@ -1,0 +1,39 @@
+# 本地开发用 MySQL + Redis，可选。启动：docker compose up -d
+# 密码可通过 .env 覆盖（MYSQL_PASSWORD、MYSQL_ROOT_PASSWORD），生产环境务必修改
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: outdoor-gear-mysql
+    environment:
+      MYSQL_DATABASE: outdoor_gear
+      MYSQL_USER: outdoor_gear
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-outdoor_gear_dev}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    # 将容器内 3306 映射到宿主机 3307，避免与本机 MySQL 冲突
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: outdoor-gear-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  mysql_data:
+  redis_data:

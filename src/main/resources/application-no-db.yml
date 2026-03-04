@@ -1,0 +1,9 @@
+# 无数据库启动（阶段一/本地未安装 MySQL、Redis 时使用）
+# 启动方式：mvn spring-boot:run -Dspring-boot.run.profiles=no-db
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration

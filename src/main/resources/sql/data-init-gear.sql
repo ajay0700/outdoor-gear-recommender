@@ -1,0 +1,183 @@
+-- 装备知识库与标签体系初始化数据
+-- 执行顺序：init-db.sql -> schema.sql -> data-init-gear.sql
+-- 用于约束过滤、基于内容推荐的可查询维度
+
+USE outdoor_gear;
+SET NAMES utf8mb4;
+
+-- 清空旧数据（可选，谨慎使用）
+-- TRUNCATE gear_item_tag;
+-- TRUNCATE gear_item;
+-- TRUNCATE gear_tag;
+-- TRUNCATE gear_category;
+
+-- ----------------------------
+-- 1. 装备分类
+-- ----------------------------
+INSERT IGNORE INTO gear_category (name, parent_id, sort_order, created_at, updated_at) VALUES
+('帐篷', 0, 1, NOW(), NOW()),
+('睡袋', 0, 2, NOW(), NOW()),
+('睡垫', 0, 3, NOW(), NOW()),
+('背包', 0, 4, NOW(), NOW()),
+('冲锋衣', 0, 5, NOW(), NOW()),
+('登山鞋', 0, 6, NOW(), NOW()),
+('炉具', 0, 7, NOW(), NOW()),
+('照明', 0, 8, NOW(), NOW()),
+('急救包', 0, 9, NOW(), NOW()),
+('登山杖', 0, 10, NOW(), NOW()),
+('天幕', 0, 11, NOW(), NOW()),
+('地席', 0, 12, NOW(), NOW()),
+('水具', 0, 13, NOW(), NOW()),
+('炊具', 0, 14, NOW(), NOW()),
+('护具', 0, 15, NOW(), NOW()),
+('速干衣', 0, 16, NOW(), NOW()),
+('抓绒衣', 0, 17, NOW(), NOW()),
+('羽绒服', 0, 18, NOW(), NOW()),
+('头灯', 0, 19, NOW(), NOW()),
+('手电', 0, 20, NOW(), NOW());
+
+-- ----------------------------
+-- 2. 标签字典（FEATURE/SCENE/SEASON/BUDGET/MATERIAL/PERSON/SKILL/WEATHER）
+-- ----------------------------
+INSERT IGNORE INTO gear_tag (name, type, created_at, updated_at) VALUES
+-- FEATURE 产品特性
+('轻量化', 'FEATURE', NOW(), NOW()),
+('防水', 'FEATURE', NOW(), NOW()),
+('防紫外线', 'FEATURE', NOW(), NOW()),
+('透气', 'FEATURE', NOW(), NOW()),
+('保暖', 'FEATURE', NOW(), NOW()),
+('速干', 'FEATURE', NOW(), NOW()),
+('耐磨', 'FEATURE', NOW(), NOW()),
+('耐用', 'FEATURE', NOW(), NOW()),
+('易收纳', 'FEATURE', NOW(), NOW()),
+('折叠', 'FEATURE', NOW(), NOW()),
+('便携', 'FEATURE', NOW(), NOW()),
+('可调节', 'FEATURE', NOW(), NOW()),
+('防晒', 'FEATURE', NOW(), NOW()),
+('防寒', 'FEATURE', NOW(), NOW()),
+('四季', 'FEATURE', NOW(), NOW()),
+('防风', 'FEATURE', NOW(), NOW()),
+('阻燃', 'FEATURE', NOW(), NOW()),
+('防潮', 'FEATURE', NOW(), NOW()),
+('防泼水', 'FEATURE', NOW(), NOW()),
+('防撕裂', 'FEATURE', NOW(), NOW()),
+('防滑', 'FEATURE', NOW(), NOW()),
+('减震', 'FEATURE', NOW(), NOW()),
+('加厚', 'FEATURE', NOW(), NOW()),
+('透气网眼', 'FEATURE', NOW(), NOW()),
+('抗菌', 'FEATURE', NOW(), NOW()),
+('防臭', 'FEATURE', NOW(), NOW()),
+('自充气', 'FEATURE', NOW(), NOW()),
+('可压缩', 'FEATURE', NOW(), NOW()),
+('可拆卸', 'FEATURE', NOW(), NOW()),
+('可清洗', 'FEATURE', NOW(), NOW()),
+('可机洗', 'FEATURE', NOW(), NOW()),
+('应急', 'FEATURE', NOW(), NOW()),
+('多功能', 'FEATURE', NOW(), NOW()),
+('保温', 'FEATURE', NOW(), NOW()),
+('隔热', 'FEATURE', NOW(), NOW()),
+('防水拉链', 'FEATURE', NOW(), NOW()),
+('纱网', 'FEATURE', NOW(), NOW()),
+('防蚊虫', 'FEATURE', NOW(), NOW()),
+('通风', 'FEATURE', NOW(), NOW()),
+('双层', 'FEATURE', NOW(), NOW()),
+('单层', 'FEATURE', NOW(), NOW()),
+('三季', 'FEATURE', NOW(), NOW()),
+('高山', 'FEATURE', NOW(), NOW()),
+('低海拔', 'FEATURE', NOW(), NOW()),
+('防雨', 'FEATURE', NOW(), NOW()),
+-- SCENE 活动场景
+('徒步', 'SCENE', NOW(), NOW()),
+('露营', 'SCENE', NOW(), NOW()),
+('登山', 'SCENE', NOW(), NOW()),
+('攀岩', 'SCENE', NOW(), NOW()),
+('骑行', 'SCENE', NOW(), NOW()),
+('滑雪', 'SCENE', NOW(), NOW()),
+('钓鱼', 'SCENE', NOW(), NOW()),
+('野钓', 'SCENE', NOW(), NOW()),
+('越野跑', 'SCENE', NOW(), NOW()),
+('自驾露营', 'SCENE', NOW(), NOW()),
+('野营', 'SCENE', NOW(), NOW()),
+('溯溪', 'SCENE', NOW(), NOW()),
+('沙漠穿越', 'SCENE', NOW(), NOW()),
+('高原徒步', 'SCENE', NOW(), NOW()),
+('雪地穿越', 'SCENE', NOW(), NOW()),
+('丛林探险', 'SCENE', NOW(), NOW()),
+('草原露营', 'SCENE', NOW(), NOW()),
+('海边露营', 'SCENE', NOW(), NOW()),
+('森林徒步', 'SCENE', NOW(), NOW()),
+('城市徒步', 'SCENE', NOW(), NOW()),
+('户外露营', 'SCENE', NOW(), NOW()),
+('家庭露营', 'SCENE', NOW(), NOW()),
+('野餐', 'SCENE', NOW(), NOW()),
+('长途徒步', 'SCENE', NOW(), NOW()),
+('短途徒步', 'SCENE', NOW(), NOW()),
+('一日游', 'SCENE', NOW(), NOW()),
+('多日徒步', 'SCENE', NOW(), NOW()),
+('露营过夜', 'SCENE', NOW(), NOW()),
+('山地骑行', 'SCENE', NOW(), NOW()),
+('公路骑行', 'SCENE', NOW(), NOW()),
+('高海拔登山', 'SCENE', NOW(), NOW()),
+('攀冰', 'SCENE', NOW(), NOW()),
+('越野滑雪', 'SCENE', NOW(), NOW()),
+('雪地徒步', 'SCENE', NOW(), NOW()),
+('水上运动', 'SCENE', NOW(), NOW()),
+('漂流', 'SCENE', NOW(), NOW()),
+-- SEASON 适用季节
+('春', 'SEASON', NOW(), NOW()),
+('夏', 'SEASON', NOW(), NOW()),
+('秋', 'SEASON', NOW(), NOW()),
+('冬', 'SEASON', NOW(), NOW()),
+('四季', 'SEASON', NOW(), NOW()),
+('夏季', 'SEASON', NOW(), NOW()),
+('冬季', 'SEASON', NOW(), NOW()),
+-- BUDGET 预算区间
+('入门级', 'BUDGET', NOW(), NOW()),
+('经济型', 'BUDGET', NOW(), NOW()),
+('性价比', 'BUDGET', NOW(), NOW()),
+('中端', 'BUDGET', NOW(), NOW()),
+('中高端', 'BUDGET', NOW(), NOW()),
+('专业级', 'BUDGET', NOW(), NOW()),
+('高端', 'BUDGET', NOW(), NOW()),
+-- MATERIAL 材质
+('尼龙', 'MATERIAL', NOW(), NOW()),
+('涤纶', 'MATERIAL', NOW(), NOW()),
+('羽绒', 'MATERIAL', NOW(), NOW()),
+('抓绒', 'MATERIAL', NOW(), NOW()),
+('Gore-Tex', 'MATERIAL', NOW(), NOW()),
+('碳纤维', 'MATERIAL', NOW(), NOW()),
+('铝合金', 'MATERIAL', NOW(), NOW()),
+('钛合金', 'MATERIAL', NOW(), NOW()),
+('聚酯纤维', 'MATERIAL', NOW(), NOW()),
+('棉', 'MATERIAL', NOW(), NOW()),
+('羊毛', 'MATERIAL', NOW(), NOW()),
+('羽绒填充', 'MATERIAL', NOW(), NOW()),
+('化纤填充', 'MATERIAL', NOW(), NOW()),
+('橡胶', 'MATERIAL', NOW(), NOW()),
+('EVA', 'MATERIAL', NOW(), NOW()),
+('PU', 'MATERIAL', NOW(), NOW()),
+('硅胶', 'MATERIAL', NOW(), NOW()),
+('牛津布', 'MATERIAL', NOW(), NOW()),
+('涂层布', 'MATERIAL', NOW(), NOW()),
+('网布', 'MATERIAL', NOW(), NOW()),
+-- PERSON 适用人数
+('单人', 'PERSON', NOW(), NOW()),
+('双人', 'PERSON', NOW(), NOW()),
+('多人', 'PERSON', NOW(), NOW()),
+('家庭', 'PERSON', NOW(), NOW()),
+-- SKILL 技能等级
+('新手', 'SKILL', NOW(), NOW()),
+('进阶', 'SKILL', NOW(), NOW()),
+('专业', 'SKILL', NOW(), NOW()),
+('发烧友', 'SKILL', NOW(), NOW()),
+-- WEATHER 天气条件
+('晴天', 'WEATHER', NOW(), NOW()),
+('阴天', 'WEATHER', NOW(), NOW()),
+('雨天', 'WEATHER', NOW(), NOW()),
+('雪天', 'WEATHER', NOW(), NOW()),
+('大风', 'WEATHER', NOW(), NOW()),
+('高温', 'WEATHER', NOW(), NOW()),
+('低温', 'WEATHER', NOW(), NOW());
+
+-- 注意：gear_item 与 gear_item_tag 的示例数据由 GearKnowledgeInitializer 在应用启动时注入
+-- 若需纯 SQL 初始化装备示例，可在此追加 INSERT 语句（需先查询 category_id、tag_id）
