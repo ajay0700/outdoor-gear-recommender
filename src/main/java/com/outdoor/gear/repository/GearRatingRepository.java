@@ -11,5 +11,7 @@ public interface GearRatingRepository extends JpaRepository<GearRating, Long> {
     Optional<GearRating> findByUserIdAndGearId(Long userId, Long gearId);
 
     List<GearRating> findByGearIdOrderByCreatedAtDesc(Long gearId);
+
+    List<GearRating> findByUserId(Long userId);
 }
 

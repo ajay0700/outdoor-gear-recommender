@@ -8,5 +8,7 @@ import java.util.List;
 public interface UserCartItemRepository extends JpaRepository<UserCartItem, Long> {
 
     List<UserCartItem> findByUserId(Long userId);
+
+    List<UserCartItem> findByGearId(Long gearId);
 }
 

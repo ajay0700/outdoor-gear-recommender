@@ -11,5 +11,7 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavorite, Long
     Optional<UserFavorite> findByUserIdAndGearId(Long userId, Long gearId);
 
     List<UserFavorite> findByUserId(Long userId);
+
+    List<UserFavorite> findByGearId(Long gearId);
 }
 
