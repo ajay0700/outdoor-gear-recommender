@@ -22,6 +22,10 @@ public record TripPlanDto(
         String activityType,
         Integer difficultyLevel,
         String note,
+        /** 需求描述（用户输入的自由文本） */
+        String requirementText,
+        /** 系统提取的关键词，逗号分隔 */
+        String extractedKeywords,
         Integer status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,

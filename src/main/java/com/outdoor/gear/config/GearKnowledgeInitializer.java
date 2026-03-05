@@ -10,6 +10,7 @@ import com.outdoor.gear.repository.GearItemTagRepository;
 import com.outdoor.gear.repository.GearTagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
@@ -37,6 +38,9 @@ public class GearKnowledgeInitializer implements CommandLineRunner {
     private final GearItemRepository itemRepository;
     private final GearItemTagRepository itemTagRepository;
 
+    @Value("${gear.init.force:false}")
+    private boolean forceReinit;
+
     public GearKnowledgeInitializer(GearCategoryRepository categoryRepository,
                                     GearTagRepository tagRepository,
                                     GearItemRepository itemRepository,
@@ -49,8 +53,11 @@ public class GearKnowledgeInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (categoryRepository.count() > 0 && tagRepository.count() > 0) {
-            log.info("装备知识库已存在，跳过初始化");
+        if (forceReinit) {
+            log.info("gear.init.force=true，清空装备知识库并重新初始化");
+            clearGearKnowledge();
+        } else if (categoryRepository.count() > 0 && tagRepository.count() > 0) {
+            log.info("装备知识库已存在，跳过初始化（需重新初始化时请设置 gear.init.force=true）");
             return;
         }
         log.info("开始初始化装备知识库与标签体系...");
@@ -59,6 +66,15 @@ public class GearKnowledgeInitializer implements CommandLineRunner {
         initSampleItems();
         long itemCount = itemRepository.count();
         log.info("装备知识库与标签体系初始化完成，共 {} 件装备", itemCount);
+    }
+
+    /** 清空装备知识库（装备-标签、装备、标签、分类），便于重新初始化 */
+    private void clearGearKnowledge() {
+        itemTagRepository.deleteAll();
+        itemRepository.deleteAll();
+        tagRepository.deleteAll();
+        categoryRepository.deleteAll();
+        log.info("装备知识库已清空");
     }
 
     private void initCategories() {
@@ -156,33 +172,34 @@ public class GearKnowledgeInitializer implements CommandLineRunner {
         for (GearTag t : allTags) tagMap.put(t.getName() + ":" + t.getType(), t.getId());
 
         LocalDateTime now = LocalDateTime.now();
-        for (GearData.Item def : GearData.all()) {
+        for (GearData.Item def : GearData.allWithVariants()) {
             Long catId = catMap.get(def.category());
             if (catId == null) catId = cats.get(0).getId();
-            GearItem item = createItem(def.name(), catId, def.brand(), def.price(), def.weight(),
-                def.season(), def.scene(), def.comfortTemp(), def.maxUsers(), now);
+            GearItem item = createItem(def, catId, now);
             itemRepository.save(item);
             linkTags(item.getId(), tagMap, now, def.tags());
         }
     }
 
-    private GearItem createItem(String name, Long catId, String brand, String price, String weight,
-                                String season, String scene, String comfortTemp, Integer maxUsers, LocalDateTime now) {
+    private GearItem createItem(GearData.Item def, Long catId, LocalDateTime now) {
         GearItem item = new GearItem();
-        item.setName(name);
+        item.setName(def.name());
         item.setCategoryId(catId);
-        item.setBrand(brand);
-        item.setPrice(new BigDecimal(price));
-        item.setWeight(weight != null ? new BigDecimal(weight) : null);
-        item.setSeason(season);
-        item.setScene(scene);
-        item.setComfortTemperature(comfortTemp);
-        item.setMaxUsers(maxUsers);
+        item.setBrand(def.brand());
+        item.setPrice(new BigDecimal(def.price()));
+        item.setWeight(def.weight() != null ? new BigDecimal(def.weight()) : null);
+        item.setSeason(def.season());
+        item.setScene(def.scene());
+        item.setComfortTemperature(def.comfortTemp());
+        item.setMaxUsers(def.maxUsers());
         item.setStock(50);
         item.setStatus(1);
         item.setCreatedAt(now);
         item.setUpdatedAt(now);
         item.setIsDeleted(false);
+        String desc = GearDescriptionHelper.generate(def.name(), def.brand(), def.category(),
+                def.weight(), def.season(), def.scene(), def.comfortTemp(), def.maxUsers(), def.tags());
+        item.setDescription(desc);
         return item;
     }
 

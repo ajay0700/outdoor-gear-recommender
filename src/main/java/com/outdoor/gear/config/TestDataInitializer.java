@@ -78,6 +78,35 @@ public class TestDataInitializer implements CommandLineRunner {
         admin.setPassword(passwordEncoder.encode("admin123"));
         admin.setUpdatedAt(LocalDateTime.now());
         userRepository.save(admin);
+
+        // 测试用户（用于协同过滤行为数据）
+        for (String[] u : new String[][]{
+                {"user1", "测试用户1"},
+                {"user2", "测试用户2"},
+                {"user3", "测试用户3"},
+                {"user4", "测试用户4"},
+                {"user5", "测试用户5"}
+        }) {
+            SysUser testUser = userRepository.findByUsername(u[0]).orElse(null);
+            if (testUser == null) {
+                testUser = new SysUser();
+                testUser.setUsername(u[0]);
+                testUser.setNickname(u[1]);
+                testUser.setPassword(passwordEncoder.encode("123456"));
+                testUser.setStatus(1);
+                testUser.setPoints(0);
+                testUser.setLevel(1);
+                testUser.setCreatedAt(LocalDateTime.now());
+                testUser.setUpdatedAt(LocalDateTime.now());
+                testUser.setIsDeleted(false);
+                testUser = userRepository.save(testUser);
+                SysUserRole ur = new SysUserRole();
+                ur.setUserId(testUser.getId());
+                ur.setRoleId(userRole.getId());
+                ur.setCreatedAt(LocalDateTime.now());
+                userRoleRepository.save(ur);
+            }
+        }
     }
 
     private SysRole createRole(String code, String name) {

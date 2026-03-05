@@ -1,3 +1,8 @@
+# 装备知识库：设为 true 可清空并重新初始化（含 1000+ 装备及描述）
+gear:
+  init:
+    force: false
+
 spring:
   # 本地未装 Redis 时排除，避免启动报错
   autoconfigure:

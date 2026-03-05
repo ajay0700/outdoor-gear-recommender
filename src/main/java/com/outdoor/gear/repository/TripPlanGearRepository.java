@@ -8,4 +8,6 @@ import java.util.List;
 public interface TripPlanGearRepository extends JpaRepository<TripPlanGear, Long> {
 
     List<TripPlanGear> findByPlanId(Long planId);
+
+    List<TripPlanGear> findByGearId(Long gearId);
 }

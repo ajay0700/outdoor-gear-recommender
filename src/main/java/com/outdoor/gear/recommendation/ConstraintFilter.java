@@ -43,12 +43,13 @@ public class ConstraintFilter {
 
     /**
      * 从出行计划生成约束
+     * 预算：计划预算为整次出行总预算，单件装备价格不超过「预算×1.2」即可，不设最低价
+     * （避免预算 2 万时要求单件 1 万以上，导致无匹配装备）
      */
     public RecommendConstraint fromPlan(TripPlan plan) {
         BigDecimal budgetMin = null;
         BigDecimal budgetMax = null;
         if (plan.getBudget() != null && plan.getBudget().compareTo(BigDecimal.ZERO) > 0) {
-            budgetMin = plan.getBudget().multiply(BigDecimal.valueOf(0.5));
             budgetMax = plan.getBudget().multiply(BigDecimal.valueOf(RecommendConstraint.BUDGET_BUFFER));
         }
         return new RecommendConstraint(

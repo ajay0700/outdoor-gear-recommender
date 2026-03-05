@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -185,6 +186,9 @@ public class GearService {
                 .map(it -> tagRepository.findById(it.getTagId()).map(GearTag::getName).orElse(""))
                 .filter(n -> !n.isEmpty()).toList();
 
+        Map<String, List<String>> tagGroups = buildTagGroups(item.getId());
+        List<GearListItemDto> relatedGears = listRelatedByCategory(item.getCategoryId(), item.getId(), 6);
+
         List<GearRating> ratings = ratingRepository.findByGearIdOrderByCreatedAtDesc(gearId);
         Double avgScore = ratings.isEmpty() ? null : ratings.stream().mapToInt(GearRating::getScore).average().orElse(0);
         Map<Long, SysUser> userMap = ratings.stream().map(GearRating::getUserId).distinct()
@@ -207,8 +211,39 @@ public class GearService {
                 item.getBrand(), item.getPrice(), item.getWeight(), item.getSeason(), item.getScene(),
                 item.getComfortTemperature(), item.getMaxUsers(), item.getStock(),
                 item.getCoverImage(), item.getImageList(), item.getDescription(), item.getStatus(),
-                item.getCreatedAt(), tagNames, avgScore, ratings.size(), ratingDtos, isFavorite, cartQuantity
+                item.getCreatedAt(), tagNames, tagGroups, avgScore, ratings.size(), ratingDtos,
+                isFavorite, cartQuantity, relatedGears
         );
+    }
+
+    private static final Map<String, String> TAG_TYPE_LABELS = Map.of(
+            "FEATURE", "产品特性", "SCENE", "适用场景", "SEASON", "适用季节",
+            "BUDGET", "预算区间", "MATERIAL", "材质", "PERSON", "适用人数",
+            "SKILL", "技能等级", "WEATHER", "天气条件"
+    );
+
+    private Map<String, List<String>> buildTagGroups(Long gearId) {
+        Map<String, List<String>> groups = new LinkedHashMap<>();
+        itemTagRepository.findByGearId(gearId).stream()
+                .map(it -> tagRepository.findById(it.getTagId()).orElse(null))
+                .filter(t -> t != null && t.getName() != null)
+                .forEach(tag -> {
+                    String type = tag.getType() != null ? tag.getType() : "OTHER";
+                    String label = TAG_TYPE_LABELS.getOrDefault(type, type);
+                    groups.computeIfAbsent(label, k -> new ArrayList<>()).add(tag.getName());
+                });
+        return groups;
+    }
+
+    private List<GearListItemDto> listRelatedByCategory(Long categoryId, Long excludeId, int limit) {
+        Specification<GearItem> spec = (root, query, cb) -> cb.and(
+                cb.equal(root.get("categoryId"), categoryId),
+                cb.equal(root.get("status"), 1),
+                cb.equal(root.get("isDeleted"), false),
+                cb.notEqual(root.get("id"), excludeId)
+        );
+        return itemRepository.findAll(spec, PageRequest.of(0, limit))
+                .stream().map(this::toListItemDto).toList();
     }
 
     /**

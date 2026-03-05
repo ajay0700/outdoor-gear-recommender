@@ -2,6 +2,7 @@ package com.outdoor.gear.service;
 
 import com.outdoor.gear.dto.TripPlanCreateRequest;
 import com.outdoor.gear.dto.TripPlanDto;
+import com.outdoor.gear.service.KeywordExtractorService;
 import com.outdoor.gear.dto.TripPlanGearDto;
 import com.outdoor.gear.entity.GearItem;
 import com.outdoor.gear.entity.TripPlan;
@@ -27,13 +28,16 @@ public class TripPlanService {
     private final TripPlanRepository planRepository;
     private final TripPlanGearRepository planGearRepository;
     private final GearItemRepository gearRepository;
+    private final KeywordExtractorService keywordExtractor;
 
     public TripPlanService(TripPlanRepository planRepository,
                           TripPlanGearRepository planGearRepository,
-                          GearItemRepository gearRepository) {
+                          GearItemRepository gearRepository,
+                          KeywordExtractorService keywordExtractor) {
         this.planRepository = planRepository;
         this.planGearRepository = planGearRepository;
         this.gearRepository = gearRepository;
+        this.keywordExtractor = keywordExtractor;
     }
 
     @Transactional
@@ -47,11 +51,19 @@ public class TripPlanService {
         plan.setDays(req.days());
         plan.setPeopleCount(req.peopleCount());
         plan.setBudget(req.budget());
-        plan.setSeason(req.season() != null ? req.season().trim() : null);
-        plan.setActivityType(req.activityType() != null ? req.activityType().trim() : null);
+        String extracted = req.requirementText() != null && !req.requirementText().isBlank()
+                ? keywordExtractor.extractKeywords(req.requirementText()) : "";
+        plan.setRequirementText(req.requirementText() != null ? req.requirementText().trim() : null);
+        plan.setExtractedKeywords(extracted.isEmpty() ? null : extracted);
+        String season = req.season() != null && !req.season().isBlank() ? req.season().trim()
+                : keywordExtractor.inferSeason(extracted);
+        String activityType = req.activityType() != null && !req.activityType().isBlank() ? req.activityType().trim()
+                : keywordExtractor.inferActivityType(extracted);
+        plan.setSeason(season);
+        plan.setActivityType(activityType);
         plan.setDifficultyLevel(req.difficultyLevel());
         plan.setNote(req.note() != null ? req.note().trim() : null);
-        plan.setStatus(req.status());
+        plan.setStatus(req.status() != null ? req.status() : 0);
         LocalDateTime now = LocalDateTime.now();
         plan.setCreatedAt(now);
         plan.setUpdatedAt(now);
@@ -73,8 +85,16 @@ public class TripPlanService {
         plan.setDays(req.days());
         plan.setPeopleCount(req.peopleCount());
         plan.setBudget(req.budget());
-        plan.setSeason(req.season() != null ? req.season().trim() : null);
-        plan.setActivityType(req.activityType() != null ? req.activityType().trim() : null);
+        String extracted = req.requirementText() != null && !req.requirementText().isBlank()
+                ? keywordExtractor.extractKeywords(req.requirementText()) : "";
+        plan.setRequirementText(req.requirementText() != null ? req.requirementText().trim() : null);
+        plan.setExtractedKeywords(extracted.isEmpty() ? null : extracted);
+        String season = req.season() != null && !req.season().isBlank() ? req.season().trim()
+                : keywordExtractor.inferSeason(extracted);
+        String activityType = req.activityType() != null && !req.activityType().isBlank() ? req.activityType().trim()
+                : keywordExtractor.inferActivityType(extracted);
+        plan.setSeason(season);
+        plan.setActivityType(activityType);
         plan.setDifficultyLevel(req.difficultyLevel());
         plan.setNote(req.note() != null ? req.note().trim() : null);
         if (req.status() != null) plan.setStatus(req.status());
@@ -155,6 +175,7 @@ public class TripPlanService {
         return new TripPlanDto(plan.getId(), plan.getUserId(), plan.getName(), plan.getDestination(),
                 plan.getStartDate(), plan.getEndDate(), plan.getDays(), plan.getPeopleCount(),
                 plan.getBudget(), plan.getSeason(), plan.getActivityType(), plan.getDifficultyLevel(),
-                plan.getNote(), plan.getStatus(), plan.getCreatedAt(), plan.getUpdatedAt(), gearDtos);
+                plan.getNote(), plan.getRequirementText(), plan.getExtractedKeywords(),
+                plan.getStatus(), plan.getCreatedAt(), plan.getUpdatedAt(), gearDtos);
     }
 }

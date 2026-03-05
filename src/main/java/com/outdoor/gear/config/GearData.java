@@ -1,5 +1,6 @@
 package com.outdoor.gear.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +13,9 @@ public final class GearData {
     public static record Item(String name, String brand, String category, String price, String weight,
                              String season, String scene, String comfortTemp, Integer maxUsers, String[] tags) {}
 
+    /**
+     * 返回基础装备列表（约450件）
+     */
     public static List<Item> all() {
         return List.of(
             // ========== 帐篷 (35) ==========
@@ -509,6 +513,27 @@ public final class GearData {
             item("Surviveware 急救包", "Surviveware", "急救包", "249", "380", "四季", "徒步,露营", null, null, "应急", "徒步", "露营", "性价比"),
             item("VSSL 急救包", "VSSL", "急救包", "399", "280", "四季", "徒步", null, null, "应急", "多功能", "徒步", "中端")
         );
+    }
+
+    /**
+     * 返回装备列表（含颜色/款式变体），总数 1000+ 件，用于知识库初始化。
+     */
+    public static List<Item> allWithVariants() {
+        List<Item> base = all();
+        List<Item> result = new ArrayList<>(base.size() * 3);
+        String[] variantSuffixes = {" 沙漠色", " 橄榄绿", " 升级版"};
+        int[] priceOffsets = {0, 20, 50}; // 变体加价
+        for (Item it : base) {
+            result.add(it);
+            for (int i = 1; i < 3; i++) {
+                int priceVal = Integer.parseInt(it.price());
+                int newPrice = Math.max(priceVal + priceOffsets[i], 99);
+                result.add(new Item(it.name() + variantSuffixes[i], it.brand(), it.category(),
+                        String.valueOf(newPrice), it.weight(), it.season(), it.scene(),
+                        it.comfortTemp(), it.maxUsers(), it.tags()));
+            }
+        }
+        return result;
     }
 
     private static Item item(String name, String brand, String category, String price, String weight,

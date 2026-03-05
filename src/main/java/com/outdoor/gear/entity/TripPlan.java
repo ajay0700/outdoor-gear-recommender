@@ -50,6 +50,12 @@ public class TripPlan {
     @Column(length = 255)
     private String note;
 
+    @Column(length = 500)
+    private String requirementText;
+
+    @Column(length = 255)
+    private String extractedKeywords;
+
     @Column(nullable = false)
     private Integer status;
 
@@ -161,6 +167,22 @@ public class TripPlan {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getRequirementText() {
+        return requirementText;
+    }
+
+    public void setRequirementText(String requirementText) {
+        this.requirementText = requirementText;
+    }
+
+    public String getExtractedKeywords() {
+        return extractedKeywords;
+    }
+
+    public void setExtractedKeywords(String extractedKeywords) {
+        this.extractedKeywords = extractedKeywords;
     }
 
     public Integer getStatus() {

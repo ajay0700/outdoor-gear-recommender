@@ -4,7 +4,9 @@ import com.outdoor.gear.dto.GearDetailDto;
 import com.outdoor.gear.dto.GearListItemDto;
 import com.outdoor.gear.dto.GearRatingRequest;
 import com.outdoor.gear.entity.GearCategory;
+import com.outdoor.gear.entity.GearTag;
 import com.outdoor.gear.repository.GearCategoryRepository;
+import com.outdoor.gear.repository.GearTagRepository;
 import com.outdoor.gear.repository.SysUserRepository;
 import com.outdoor.gear.service.GearRatingService;
 import com.outdoor.gear.service.GearService;
@@ -34,14 +36,22 @@ public class GearController {
     private final GearService gearService;
     private final GearRatingService ratingService;
     private final GearCategoryRepository categoryRepository;
+    private final GearTagRepository tagRepository;
     private final SysUserRepository userRepository;
 
     public GearController(GearService gearService, GearRatingService ratingService,
-                          GearCategoryRepository categoryRepository, SysUserRepository userRepository) {
+                          GearCategoryRepository categoryRepository, GearTagRepository tagRepository,
+                          SysUserRepository userRepository) {
         this.gearService = gearService;
         this.ratingService = ratingService;
         this.categoryRepository = categoryRepository;
+        this.tagRepository = tagRepository;
         this.userRepository = userRepository;
+    }
+
+    @GetMapping("/tags")
+    public List<GearTag> listTags() {
+        return tagRepository.findAll();
     }
 
     @GetMapping("/categories")

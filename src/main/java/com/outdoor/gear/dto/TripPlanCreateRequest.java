@@ -21,6 +21,8 @@ public record TripPlanCreateRequest(
         String activityType,
         Integer difficultyLevel,
         String note,
+        /** 需求描述（自由文本），系统自动提取关键词用于推荐 */
+        String requirementText,
         Integer status
 ) {
     public Integer status() {
